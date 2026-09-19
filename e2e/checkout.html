@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Payment checkout</title>
+  <style>
+    body { font-family: sans-serif; margin: 40px; max-width: 520px; }
+    label { display: block; margin: 12px 0; }
+    input { display: block; margin-top: 4px; padding: 8px; width: 100%; box-sizing: border-box; }
+    button { margin-top: 12px; padding: 8px 16px; }
+    [hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <main>
+    <section data-testid="payment-form">
+      <h1>Payment checkout</h1>
+      <form id="payment-form" novalidate>
+        <label>Card number <input name="cardNumber" inputmode="numeric" pattern="[0-9]{16}" maxlength="16" required></label>
+        <label>Expiry <input name="expiry" placeholder="MM/YY" pattern="(0[1-9]|1[0-2])/[0-9]{2}" required></label>
+        <label>CVC <input name="cvc" inputmode="numeric" pattern="[0-9]{3}" maxlength="3" required></label>
+        <label>Amount <input name="amount" type="number" min="1" step="0.01" required></label>
+        <p data-testid="validation-error" role="alert" hidden>Please correct the highlighted fields.</p>
+        <button type="submit">Pay</button>
+      </form>
+    </section>
+    <section data-testid="confirmation-page" hidden>
+      <h1>Payment confirmation</h1>
+      <p>Payment reference: <strong data-testid="payment-reference"></strong></p>
+      <p>Final status: <strong data-testid="final-status"></strong></p>
+    </section>
+  </main>
+  <script>
+    document.querySelector('#payment-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const validationError = document.querySelector('[data-testid="validation-error"]');
+      if (!form.checkValidity()) {
+        validationError.hidden = false;
+        return;
+      }
+      validationError.hidden = true;
+      document.querySelector('[data-testid="payment-form"]').hidden = true;
+      document.querySelector('[data-testid="confirmation-page"]').hidden = false;
+      document.querySelector('[data-testid="payment-reference"]').textContent = 'E2E-001';
+      document.querySelector('[data-testid="final-status"]').textContent = 'Succeeded';
+      history.pushState({}, '', '#confirmation');
+    });
+  </script>
+</body>
+</html>
